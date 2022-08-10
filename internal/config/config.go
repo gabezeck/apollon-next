@@ -5,6 +5,7 @@ import (
 )
 
 type Config struct {
+	Env       string
 	LAPIKey   string
 	LSecret   string
 	RID       string
@@ -15,6 +16,7 @@ type Config struct {
 
 func New() *Config {
 	cfg := Config{
+		Env:       genv.Key("ENV").String(),
 		LAPIKey:   genv.Key("LAST_FM_API_KEY").String(),
 		LSecret:   genv.Key("LAST_FM_SECRET").String(),
 		RID:       genv.Key("REDDIT_APP_ID").String(),

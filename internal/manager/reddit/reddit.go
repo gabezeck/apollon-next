@@ -36,6 +36,7 @@ func (r *RMgr) GetSongsFromPosts(sub string, limit int, time string) ([]*types.S
 	}
 
 	if len(posts) == 0 {
+		r.Logger.Error("No posts found")
 		return nil, errors.New("no posts found")
 	}
 
@@ -65,7 +66,10 @@ func parseSongData(posts []mira.PostListingChild, log *zap.SugaredLogger) ([]*ty
 
 	var songs []*types.Song
 	for _, post := range posts {
-		matches := re.FindAllStringSubmatch(post.GetTitle(), -1)
+		title := post.GetTitle()
+		log.Debugf("\nPost title: %v", title)
+
+		matches := re.FindAllStringSubmatch(title, -1)
 
 		if len(matches) > 0 && len(matches[0]) >= 2 {
 			artist := matches[0][1]

@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/gabezeck/test-api/internal/api/types"
 	"github.com/gabezeck/test-api/internal/deps"
@@ -30,7 +30,10 @@ func RegisterRoutes(r *mux.Router, deps *deps.Deps) {
 	api := New(deps)
 
 	r.HandleFunc("/", HomeHandler)
-	r.HandleFunc("/songs-from-posts", func(w http.ResponseWriter, r *http.Request) { SongsFromPostsHandler(w, r, api) })
+	r.
+		HandleFunc("/songs-from-posts", func(w http.ResponseWriter, r *http.Request) { SongsFromPostsHandler(w, r, api) }).
+		Methods("GET")
+
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,21 +41,15 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SongsFromPostsHandler(w http.ResponseWriter, r *http.Request, api *API) {
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
+	query := r.URL.Query()
+
+	limit, err := strconv.Atoi(query.Get("limit"))
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		limit = 10
+		api.Deps.Logger.Debug("Failed to convert limit string to int. Defaulting to 10 posts.")
 	}
 
-	var req types.PostsRequest
-	err = json.Unmarshal(b, &req)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	songs, err := api.RMgr.GetSongsFromPosts(req.Sub, req.Limit, req.Time)
+	songs, err := api.RMgr.GetSongsFromPosts(query.Get("sub"), limit, query.Get("time"))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -66,7 +63,7 @@ func SongsFromPostsHandler(w http.ResponseWriter, r *http.Request, api *API) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(output)
 }

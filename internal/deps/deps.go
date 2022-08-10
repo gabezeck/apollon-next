@@ -18,7 +18,7 @@ type Deps struct {
 func New(cfg *config.Config) *Deps {
 	return &Deps{
 		LClient: CreateLClient(cfg),
-		Logger:  CreateLogger(),
+		Logger:  CreateLogger(cfg),
 		RClient: CreateRClient(cfg),
 	}
 }
@@ -27,11 +27,17 @@ func CreateLClient(cfg *config.Config) *lastfm.Api {
 	return lastfm.New(cfg.LAPIKey, cfg.LSecret)
 }
 
-func CreateLogger() *zap.SugaredLogger {
-	logger, err := zap.NewProduction()
+func CreateLogger(cfg *config.Config) *zap.SugaredLogger {
+	start := zap.NewProduction
+	if cfg.Env == "dev" {
+		start = zap.NewDevelopment
+	}
+
+	logger, err := start()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer logger.Sync()
 
 	return logger.Sugar()
 }
