@@ -1,0 +1,5 @@
+make: Entering directory `/Users/gabrielzeck/go/src/github.com/gabezeck/test-api'
+make: Leaving directory `/Users/gabrielzeck/go/src/github.com/gabezeck/test-api'
+ 
+Makefile:4: *** missing separator.  Stop.
+
