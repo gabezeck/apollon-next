@@ -1,6 +1,7 @@
 package types
 
 import (
+	LTypes "github.com/gabezeck/test-api/internal/manager/lastfm/types"
 	RTypes "github.com/gabezeck/test-api/internal/manager/reddit/types"
 )
 
@@ -10,6 +11,11 @@ type PostsRequest struct {
 	Time  string `json:"time"`
 }
 
+type Song struct {
+	TrackInfo *RTypes.Song        `json:"trackInfo"`
+	MetaData  *LTypes.LastFMTrack `json:"metadata"`
+}
+
 type SongsResponse struct {
-	Songs []*RTypes.Song `json:"songs"`
+	Songs []*Song `json:"songs"`
 }
