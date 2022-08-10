@@ -24,7 +24,15 @@ func New(cfg *config.Config) *Deps {
 }
 
 func CreateLClient(cfg *config.Config) *lastfm.Api {
-	return lastfm.New(cfg.LAPIKey, cfg.LSecret)
+	api := lastfm.New(cfg.LAPIKey, cfg.LSecret)
+
+	// TODO: Implement OAuth
+	err := api.Login(cfg.LUserName, cfg.LPassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return api
 }
 
 func CreateLogger(cfg *config.Config) *zap.SugaredLogger {
