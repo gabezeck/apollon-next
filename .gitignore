@@ -22,3 +22,6 @@ go.work
 
 # Env vars
 .env
+
+# Code editor files
+.vscode
